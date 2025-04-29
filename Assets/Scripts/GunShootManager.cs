@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class GunShootManager : MonoBehaviour
 {
     public GameObject[] targets;
+    public TextMeshProUGUI dialogueText;
     private bool canShoot = false;
 
     void Update()
@@ -24,14 +27,18 @@ public class GunShootManager : MonoBehaviour
             Debug.Log("맞춘 타겟: " + hit.collider.name);
 
             FireGunEffect();
-
+            Target targetScript = hit.collider.GetComponent<Target>();
+            if (targetScript != null)
+            {
+                StartCoroutine(targetScript.PlayHitEffect());
+            }
             if (hit.collider.CompareTag("TargetA"))
             {
-                Invoke("LoadSceneA", 1.0f);
+                ShowDialogue("You hit Target A!");
             }
             else if (hit.collider.CompareTag("TargetB"))
             {
-                Invoke("LoadSceneB", 1.0f);
+                ShowDialogue("You hit Target B!");
             }
         }
     }
@@ -59,5 +66,10 @@ public class GunShootManager : MonoBehaviour
     void LoadSceneB()
     {
         SceneManager.LoadScene("SceneB");
+    }
+    void ShowDialogue(string message)
+    {
+        dialogueText.text = message;
+        dialogueText.gameObject.SetActive(true);
     }
 }
