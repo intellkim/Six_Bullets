@@ -12,7 +12,9 @@ public class GunShootManager : MonoBehaviour
     public AudioSource audioSource;
     public TextMeshProUGUI dialogueText;
     private bool canShoot = false;
-
+    void Start(){
+        PlayerPrefs.SetInt("BulletsLeft", 6);
+    }
     void Update()
     {
         if (canShoot && Input.GetMouseButtonDown(0))
@@ -58,6 +60,14 @@ public class GunShootManager : MonoBehaviour
                 {
                     StartCoroutine(targetScript.PlayHitEffect());
                 }
+
+                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
+                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
+                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
+
+                // 🔽 다음 씬으로 이동
+                Invoke("LoadNextScene", 0.8f);
+
             }
             else if (hit.collider.CompareTag("TargetB"))
             {
@@ -67,6 +77,14 @@ public class GunShootManager : MonoBehaviour
                 {
                     StartCoroutine(targetScript.PlayHitEffect());
                 }
+
+                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
+                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
+                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
+
+                // 🔽 다음 씬으로 이동
+                Invoke("LoadNextScene", 0.8f);
+
             }
         }
     }
@@ -86,16 +104,10 @@ public class GunShootManager : MonoBehaviour
         }
         canShoot = true;
     }
-
-    // void LoadSceneA()
-    // {
-    //     SceneManager.LoadScene("SceneA");
-    // }
-
-    // void LoadSceneB()
-    // {
-    //     SceneManager.LoadScene("SceneB");
-    // }
+    void LoadNextScene()
+    {
+      SceneManager.LoadScene("BulletCountScene");
+    }
     void ShowDialogue(string message)
     {
         dialogueText.text = message;
