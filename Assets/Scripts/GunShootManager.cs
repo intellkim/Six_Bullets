@@ -5,7 +5,11 @@ using TMPro;
 
 public class GunShootManager : MonoBehaviour
 {
-    public GameObject[] targets;
+    public GameObject[] targets;            // 타겟들
+    public GameObject cinematicOverlay;     // 어두운 연출용 오버레이 (ex. 반투명 검정)
+    public AudioSource heartbeatAudio;
+    public AudioClip gunshotSFX;
+    public AudioSource audioSource;
     public TextMeshProUGUI dialogueText;
     private bool canShoot = false;
 
@@ -16,7 +20,20 @@ public class GunShootManager : MonoBehaviour
             Shoot();
         }
     }
+    public void EnterBulletChoiceMode()
+    {
+        Time.timeScale = 0f;               // 시간 정지
+        heartbeatAudio.Play();             // 심장 소리
+        cinematicOverlay.SetActive(true);  // 어두운 연출
 
+        foreach (GameObject target in targets)
+        {
+            target.SetActive(true);        // 타겟 표시
+        }
+
+        Cursor.visible = true;             // 마우스 보이게
+        canShoot = true;
+    }
     void Shoot()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -26,19 +43,30 @@ public class GunShootManager : MonoBehaviour
         {
             Debug.Log("맞춘 타겟: " + hit.collider.name);
 
-            FireGunEffect();
+            Time.timeScale = 1f;
+            heartbeatAudio.Stop();
+            cinematicOverlay.SetActive(false);
+            Cursor.visible = false;
+
             Target targetScript = hit.collider.GetComponent<Target>();
-            if (targetScript != null)
-            {
-                StartCoroutine(targetScript.PlayHitEffect());
-            }
+            
             if (hit.collider.CompareTag("TargetA"))
             {
                 ShowDialogue("You hit Target A!");
+                FireGunEffect();
+                if (targetScript != null)
+                {
+                    StartCoroutine(targetScript.PlayHitEffect());
+                }
             }
             else if (hit.collider.CompareTag("TargetB"))
             {
                 ShowDialogue("You hit Target B!");
+                FireGunEffect();
+                if (targetScript != null)
+                {
+                    StartCoroutine(targetScript.PlayHitEffect());
+                }
             }
         }
     }
@@ -46,6 +74,7 @@ public class GunShootManager : MonoBehaviour
     void FireGunEffect()
     {
         Debug.Log("총 발사 빵! 🔫");
+        audioSource.PlayOneShot(gunshotSFX); 
         // 이펙트나 사운드 추가하면 됨
     }
 
@@ -58,15 +87,15 @@ public class GunShootManager : MonoBehaviour
         canShoot = true;
     }
 
-    void LoadSceneA()
-    {
-        SceneManager.LoadScene("SceneA");
-    }
+    // void LoadSceneA()
+    // {
+    //     SceneManager.LoadScene("SceneA");
+    // }
 
-    void LoadSceneB()
-    {
-        SceneManager.LoadScene("SceneB");
-    }
+    // void LoadSceneB()
+    // {
+    //     SceneManager.LoadScene("SceneB");
+    // }
     void ShowDialogue(string message)
     {
         dialogueText.text = message;

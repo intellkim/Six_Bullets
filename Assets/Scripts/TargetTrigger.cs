@@ -9,7 +9,7 @@ public class TargetTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {   
             Debug.Log("zone 들어옴");
-            gunShootManager.ActivateTargets();
+            gunShootManager.EnterBulletChoiceMode();
             gameObject.SetActive(false);
         }
     }
