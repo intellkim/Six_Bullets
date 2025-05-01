@@ -11,6 +11,7 @@ public class GunShootManager : MonoBehaviour
     public AudioClip gunshotSFX;
     public AudioSource audioSource;
     public TextMeshProUGUI dialogueText;
+    public GameObject crosshairUI;
     private bool canShoot = false;
     void Start(){
         PlayerPrefs.SetInt("BulletsLeft", 6);
@@ -33,7 +34,9 @@ public class GunShootManager : MonoBehaviour
             target.SetActive(true);        // 타겟 표시
         }
 
-        Cursor.visible = true;             // 마우스 보이게
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        Cursor.visible = false;
+        crosshairUI.SetActive(true);
         canShoot = true;
     }
     void Shoot()
@@ -48,7 +51,9 @@ public class GunShootManager : MonoBehaviour
             Time.timeScale = 1f;
             heartbeatAudio.Stop();
             cinematicOverlay.SetActive(false);
-            Cursor.visible = false;
+            crosshairUI.SetActive(false);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            Cursor.visible = true;
 
             Target targetScript = hit.collider.GetComponent<Target>();
             
