@@ -13,6 +13,7 @@ public class GunShootManager : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public GameObject crosshairUI;
     private bool canShoot = false;
+    public Animator playerAnim;
     void Start(){
         PlayerPrefs.SetInt("BulletsLeft", 6);
     }
@@ -25,9 +26,10 @@ public class GunShootManager : MonoBehaviour
     }
     public void EnterBulletChoiceMode()
     {
-        Time.timeScale = 0f;               // 시간 정지
+        playerAnim.SetBool("isAiming", true);
         heartbeatAudio.Play();             // 심장 소리
         cinematicOverlay.SetActive(true);  // 어두운 연출
+        Time.timeScale = 0f;               // 시간 정지
 
         foreach (GameObject target in targets)
         {
@@ -69,7 +71,6 @@ public class GunShootManager : MonoBehaviour
                 int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
                 bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
                 PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
-
                 // 🔽 다음 씬으로 이동
                 Invoke("LoadNextScene", 0.8f);
 
@@ -86,7 +87,6 @@ public class GunShootManager : MonoBehaviour
                 int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
                 bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
                 PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
-
                 // 🔽 다음 씬으로 이동
                 Invoke("LoadNextScene", 0.8f);
 

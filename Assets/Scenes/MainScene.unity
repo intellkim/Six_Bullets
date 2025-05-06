@@ -280,17 +280,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0028491616, y: 0.03629875}
+  m_Offset: {x: 0.025985062, y: 0.018725276}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.88, y: 2}
+    oldSize: {x: 1.1, y: 2.5}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9138628, y: 1.9722033}
+  m_Size: {x: 1.4228495, y: 2.665878}
   m_EdgeRadius: 0
 --- !u!50 &250980525
 Rigidbody2D:
@@ -401,7 +401,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 8dd5d8779fd5579429d58af392f6427c, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
@@ -1382,6 +1382,7 @@ MonoBehaviour:
   audioSource: {fileID: 569942987}
   dialogueText: {fileID: 1318223980}
   crosshairUI: {fileID: 537591392}
+  playerAnim: {fileID: 250980528}
 --- !u!4 &913704188
 Transform:
   m_ObjectHideFlags: 0
