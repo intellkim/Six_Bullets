@@ -23,6 +23,6 @@ public class BulletCountDisplay : MonoBehaviour
 
     void GoToNextScene()
     {
-        SceneManager.LoadScene("StoryScene_2");
+        SceneManager.LoadScene(SceneList.BadEnd1);
     }
 }

@@ -30,7 +30,7 @@ public class PrologueManager : MonoBehaviour
         yield return ShowLine("이건... 무슨 일이야...");
 
         yield return new WaitForSecondsRealtime(1.5f);
-        SceneManager.LoadScene("MainScene");
+        SceneManager.LoadScene(SceneList.Chapter1_Jumpmap);
     }
 
     System.Collections.IEnumerator ShowLine(string text)

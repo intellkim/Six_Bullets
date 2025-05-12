@@ -111,7 +111,7 @@ public class GunShootManager : MonoBehaviour
     }
     void LoadNextScene()
     {
-      SceneManager.LoadScene("BulletCountScene");
+      SceneManager.LoadScene(SceneList.BulletCount);
     }
     void ShowDialogue(string message)
     {
