@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - TargetA
   - TargetB
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -7,7 +7,14 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private Animator anim;
+    // 벽점프 관련 변수
+    public float wallJumpForceX = 6f;
+    public float wallJumpForceY = 10f;
 
+    private bool isTouchingWall = false;
+    private bool isWallJumping = false;
+    private float wallJumpTime = 0.2f;
+    private float wallJumpCounter;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -20,6 +27,14 @@ public class PlayerController : MonoBehaviour
         Jump();
 
         anim.SetBool("isJumping", !isGrounded);
+        if (isWallJumping)
+        {
+            wallJumpCounter -= Time.deltaTime;
+            if (wallJumpCounter <= 0f)
+            {
+                isWallJumping = false;
+            }
+        }
     }
 
     void Move()
@@ -39,9 +54,24 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump"))
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            if (isGrounded)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            }
+            else if (isTouchingWall && !isGrounded)
+            {
+                isWallJumping = true;
+                wallJumpCounter = wallJumpTime;
+
+                // 벽 반대 방향으로 튕겨 나가기
+                float direction = -Mathf.Sign(transform.localScale.x);
+                rb.linearVelocity = new Vector2(wallJumpForceX * direction, wallJumpForceY);
+
+                // 방향 전환
+                transform.localScale = new Vector3(direction, 1f, 1f);
+            }
         }
     }
 
@@ -52,6 +82,8 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
+        if (collision.gameObject.CompareTag("Wall"))
+            isTouchingWall = true;
     }
 
     void OnCollisionExit2D(Collision2D collision)
@@ -61,5 +93,15 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = false;
         }
+        if (collision.gameObject.CompareTag("Wall"))
+            isTouchingWall = false;
     }
+    public void ForceGrounded()
+    {
+        isGrounded = true;
+        rb.gravityScale = 1f;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // 수직 속도 정지
+        anim.SetBool("isJumping", false);
+    }
+
 }

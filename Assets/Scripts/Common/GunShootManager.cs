@@ -29,7 +29,7 @@ public class GunShootManager : MonoBehaviour
         playerAnim.SetBool("isAiming", true);
         heartbeatAudio.Play();             // 심장 소리
         cinematicOverlay.SetActive(true);  // 어두운 연출
-        Time.timeScale = 0f;               // 시간 정지
+        Time.timeScale = 0.1f;               // 시간 느리게
 
         foreach (GameObject target in targets)
         {
