@@ -5,7 +5,7 @@ public static class SceneList
     public const string Prologue = "PrologueScene";
     public const string BulletCount = "BulletCountScene";
     public const string Chapter1_Jumpmap = "Chapter1_Jumpmap";
-    public const string Chapter1_Gunchoice = "Chapter 1_GunChoice";
+    public const string Chapter1_Gunchoice = "Chapter1_GunChoice";
     public const string BadEnd1 = "BadEnd_1";
     public const string Chapter2_Jumpmap = "Chapter2_Jumpmap";
     public const string Chapter2_Briefing_Betrayal = "Chapter2_Briefing_Betrayal";
