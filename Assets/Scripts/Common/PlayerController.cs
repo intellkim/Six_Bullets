@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private bool isWallJumping = false;
     private float wallJumpTime = 0.2f;
     private float wallJumpCounter;
+    private bool isKnockedBack = false;  // 넉백 중일 때 조작 잠금
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -39,6 +41,8 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
+        if (isKnockedBack) return; // 넉백 중이면 이동 차단
+
         float moveInput = Input.GetAxisRaw("Horizontal"); // A, D 키 또는 ←, → 방향키
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
@@ -54,6 +58,8 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
+        if (isKnockedBack) return; // 넉백 중이면 이동 차단
+
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
@@ -102,6 +108,30 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 1f;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // 수직 속도 정지
         anim.SetBool("isJumping", false);
+    }
+    public void ApplyKnockback(Vector2 attackerPos, float distance = 4f, float duration = 0.1f)
+    {
+        if (!isKnockedBack) StartCoroutine(KnockbackCoroutine(attackerPos, distance, duration));
+    }
+
+    private IEnumerator KnockbackCoroutine(Vector2 attackerPos, float distance, float duration)
+    {
+        isKnockedBack = true;
+
+        float xDir = Mathf.Sign(transform.position.x - attackerPos.x);
+        Vector2 start = transform.position;
+        Vector2 end = start + new Vector2(xDir * distance, 0); // ⬅️⬅️ y=0 유지!
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            transform.position = Vector2.Lerp(start, end, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = end;
+        isKnockedBack = false;
     }
 
 }
