@@ -91,6 +91,22 @@ public class GunShootManager : MonoBehaviour
                 Invoke("LoadNextScene", 0.8f);
 
             }
+            else if (hit.collider.CompareTag("Target_Betrayer"))
+            {
+                ShowDialogue("You hit Target Target_Betrayer!");
+                FireGunEffect();
+                if (targetScript != null)
+                {
+                    StartCoroutine(targetScript.PlayHitEffect());
+                }
+
+                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
+                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
+                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
+                // 🔽 다음 씬으로 이동
+                Invoke("LoadNextScene", 0.8f);
+
+            }
         }
     }
 

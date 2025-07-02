@@ -15,7 +15,9 @@ public class BetrayerAI : MonoBehaviour
 
     private enum State { Idle, Jumping, Landing }
     private State currentState = State.Idle;
-
+    public int hitCount = 0;
+    public int maxHits = 3;
+    public GunShootManager gunShootManager; // 인스펙터에서 연결
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -25,22 +27,26 @@ public class BetrayerAI : MonoBehaviour
     void JumpTowardPlayer()
     {
         if (!isGrounded) return;
-        Debug.Log("🔁 JumpTowardPlayer() 호출됨");
 
         float distance = Vector2.Distance(transform.position, player.position);
-        if (distance > maxJumpDistance)
-        {
-            Debug.Log("❌ 너무 멀어서 점프 안 함");
-            return;
-        }
+        if (distance > maxJumpDistance) return;
 
-        Vector2 direction = (player.position - transform.position).normalized;
-        Vector2 force = new Vector2(direction.x * attackForceX, jumpForce);
+        float distanceX = player.position.x - transform.position.x;
+        float rawForceX = distanceX * 50f;
+
+        // 가까워도 최소 x힘 보장
+        if (Mathf.Abs(rawForceX) < 200f)
+            rawForceX = Mathf.Sign(rawForceX) * 200f;
+
+        // Clamp 범위를 크게 설정하거나 생략
+        // float clampedForceX = Mathf.Clamp(rawForceX, -600f, 600f);  // ← 충분히 넉넉하게
+
+        Vector2 force = new Vector2(rawForceX, jumpForce);
+        Debug.Log($"📐 점프 Force: {rawForceX}");
 
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(force, ForceMode2D.Impulse);
 
-        Debug.Log("✅ 점프 발동: 방향 " + direction);
         currentState = State.Jumping;
         isGrounded = false;
         canBeHit = false;
@@ -64,7 +70,7 @@ public class BetrayerAI : MonoBehaviour
                 Debug.Log("📦 바닥에 닿음 → isGrounded = true");
             }
         }
-        
+
         if (collision.gameObject.CompareTag("Player") && !isGrounded)
         {
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
@@ -90,7 +96,21 @@ public class BetrayerAI : MonoBehaviour
         if (canBeHit)
         {
             Debug.Log("🟥 배신자 피격 성공!");
-            // TODO: 체력 감소, 이펙트 등
+            hitCount++;
+
+            if (hitCount >= maxHits)
+            {
+                Debug.Log("🔫 총기 선택 트리거 발동!");
+                if (gunShootManager != null)
+                {
+                    gunShootManager.EnterBulletChoiceMode(); // ← 연출 시작
+                    this.enabled = false;  // AI 멈춤
+                }
+                else
+                    Debug.LogWarning("GunShootManager 연결 안됨!");
+            }
+
+            // 피격 이펙트/리액션 추가 가능
         }
         else
         {
