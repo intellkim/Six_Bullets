@@ -178,6 +178,13 @@ MonoBehaviour:
   jumpForce: 7
   wallJumpForceX: 6
   wallJumpForceY: 10
+  attackRange: 1.5
+  betrayerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  hitByBetrayerCount: 0
+  maxHitsToTriggerGun: 3
+  gunShootManager: {fileID: 0}
 --- !u!61 &104424920
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1541,6 +1548,7 @@ MonoBehaviour:
   dialogueText: {fileID: 757921547}
   crosshairUI: {fileID: 1385201153}
   playerAnim: {fileID: 104424918}
+  playerController: {fileID: 104424919}
 --- !u!4 &1566469899
 Transform:
   m_ObjectHideFlags: 0

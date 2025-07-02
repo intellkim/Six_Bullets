@@ -14,6 +14,7 @@ public class GunShootManager : MonoBehaviour
     public GameObject crosshairUI;
     private bool canShoot = false;
     public Animator playerAnim;
+    public PlayerController playerController;
     void Start(){
         PlayerPrefs.SetInt("BulletsLeft", 6);
     }
@@ -26,6 +27,10 @@ public class GunShootManager : MonoBehaviour
     }
     public void EnterBulletChoiceMode()
     {
+        if (playerController != null)
+    {
+        playerController.ForceGrounded();  // ✅ 총기 선택 직전 플레이어 고정
+    }
         playerAnim.SetBool("isAiming", true);
         heartbeatAudio.Play();             // 심장 소리
         cinematicOverlay.SetActive(true);  // 어두운 연출

@@ -698,6 +698,7 @@ MonoBehaviour:
   dialogueText: {fileID: 141683902}
   crosshairUI: {fileID: 965028471}
   playerAnim: {fileID: 1726662029}
+  playerController: {fileID: 1726662030}
 --- !u!4 &1040162707
 Transform:
   m_ObjectHideFlags: 0

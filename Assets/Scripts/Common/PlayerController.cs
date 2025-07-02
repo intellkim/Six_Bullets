@@ -124,6 +124,8 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 1f;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // 수직 속도 정지
         anim.SetBool("isJumping", false);
+        anim.SetFloat("Speed", 0f);  // ✅ 강제로 정지 상태
+
     }
     public void ApplyKnockback(Vector2 attackerPos, float distance = 4f, float duration = 0.1f)
     {
@@ -136,7 +138,6 @@ public class PlayerController : MonoBehaviour
             if (gunShootManager != null)
             {
                 Debug.Log("💀 플레이어 피격 3회 → 총기 선택 진입!");
-                ForceGrounded(); // ✅ 총기 선택 진입 전 안정된 상태
                 gunShootManager.EnterBulletChoiceMode();
                 this.enabled = false;
             }
