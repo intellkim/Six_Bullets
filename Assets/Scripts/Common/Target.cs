@@ -1,14 +1,24 @@
 using UnityEngine;
-using System.Collections;  // 코루틴을 쓰려면 필요
+using System.Collections;
 
 public class Target : MonoBehaviour
 {
+    [Header("이펙트")]
     public GameObject hitEffect;  // 타겟 맞았을 때 켜질 이펙트
+
+    [Header("타겟 메타 정보")]
+    [TextArea]
+    public string dialogueText;        // 맞았을 때 보여줄 대사
+    public string nextSceneName;       // BulletCount 이후 이동할 씬 이름
+    public bool reduceBullet = true;   // 총알 줄일지 여부
 
     public IEnumerator PlayHitEffect()
     {
-        hitEffect.SetActive(true);               // 이펙트 켜기
-        yield return new WaitForSeconds(0.15f);  // 0.15초 기다림
-        hitEffect.SetActive(false);              // 이펙트 끄기
+        if (hitEffect != null)
+        {
+            hitEffect.SetActive(true);
+            yield return new WaitForSeconds(0.15f);
+            hitEffect.SetActive(false);
+        }
     }
 }

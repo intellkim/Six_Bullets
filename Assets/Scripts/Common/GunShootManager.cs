@@ -5,19 +5,25 @@ using TMPro;
 
 public class GunShootManager : MonoBehaviour
 {
-    public GameObject[] targets;            // 타겟들
-    public GameObject cinematicOverlay;     // 어두운 연출용 오버레이 (ex. 반투명 검정)
+    public GameObject[] targets;
+    public GameObject cinematicOverlay;
     public AudioSource heartbeatAudio;
     public AudioClip gunshotSFX;
     public AudioSource audioSource;
     public TextMeshProUGUI dialogueText;
     public GameObject crosshairUI;
-    private bool canShoot = false;
     public Animator playerAnim;
     public PlayerController playerController;
-    void Start(){
-        PlayerPrefs.SetInt("BulletsLeft", 6);
+
+    private bool canShoot = false;
+
+    void Start()
+    {
+        // 초기화는 BulletCountDisplay에서 책임지도록 수정 가능
+        if (!PlayerPrefs.HasKey("BulletsLeft"))
+            PlayerPrefs.SetInt("BulletsLeft", 6);
     }
+
     void Update()
     {
         if (canShoot && Input.GetMouseButtonDown(0))
@@ -25,27 +31,26 @@ public class GunShootManager : MonoBehaviour
             Shoot();
         }
     }
+
     public void EnterBulletChoiceMode()
     {
         if (playerController != null)
-    {
-        playerController.ForceGrounded();  // ✅ 총기 선택 직전 플레이어 고정
-    }
+            playerController.ForceGrounded();
+
         playerAnim.SetBool("isAiming", true);
-        heartbeatAudio.Play();             // 심장 소리
-        cinematicOverlay.SetActive(true);  // 어두운 연출
-        Time.timeScale = 0.1f;               // 시간 느리게
+        heartbeatAudio.Play();
+        cinematicOverlay.SetActive(true);
+        Time.timeScale = 0.1f;
 
         foreach (GameObject target in targets)
-        {
-            target.SetActive(true);        // 타겟 표시
-        }
+            target.SetActive(true);
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         Cursor.visible = false;
         crosshairUI.SetActive(true);
         canShoot = true;
     }
+
     void Shoot()
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -59,84 +64,51 @@ public class GunShootManager : MonoBehaviour
             heartbeatAudio.Stop();
             cinematicOverlay.SetActive(false);
             crosshairUI.SetActive(false);
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             Cursor.visible = true;
 
             Target targetScript = hit.collider.GetComponent<Target>();
-            
-            if (hit.collider.CompareTag("TargetA"))
+            if (targetScript != null)
             {
-                ShowDialogue("You hit Target A!");
-                FireGunEffect();
-                if (targetScript != null)
-                {
-                    StartCoroutine(targetScript.PlayHitEffect());
-                }
-
-                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
-                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
-                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
-                // 🔽 다음 씬으로 이동
-                Invoke("LoadNextScene", 0.8f);
-
-            }
-            else if (hit.collider.CompareTag("TargetB"))
-            {
-                ShowDialogue("You hit Target B!");
-                FireGunEffect();
-                if (targetScript != null)
-                {
-                    StartCoroutine(targetScript.PlayHitEffect());
-                }
-
-                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
-                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
-                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
-                // 🔽 다음 씬으로 이동
-                Invoke("LoadNextScene", 0.8f);
-
-            }
-            else if (hit.collider.CompareTag("Target_Betrayer"))
-            {
-                ShowDialogue("You hit Target Target_Betrayer!");
-                FireGunEffect();
-                if (targetScript != null)
-                {
-                    StartCoroutine(targetScript.PlayHitEffect());
-                }
-
-                int bulletsLeft = PlayerPrefs.GetInt("BulletsLeft", 6);
-                bulletsLeft = Mathf.Max(bulletsLeft - 1, 0);
-                PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
-                // 🔽 다음 씬으로 이동
-                Invoke("LoadNextScene", 0.8f);
-
+                HandleTargetHit(targetScript);
             }
         }
     }
 
+    void HandleTargetHit(Target target)
+    {
+        ShowDialogue(target.dialogueText);
+        FireGunEffect();
+
+        if (target.reduceBullet)
+        {
+            int bulletsLeft = Mathf.Max(PlayerPrefs.GetInt("BulletsLeft", 6) - 1, 0);
+            PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
+        }
+
+        if (!string.IsNullOrEmpty(target.nextSceneName))
+        {
+            PlayerPrefs.SetString("NextSceneAfterBulletCount", target.nextSceneName);
+        }
+
+        StartCoroutine(target.PlayHitEffect());
+
+        Invoke(nameof(LoadNextScene), 0.8f);
+    }
+
+    void LoadNextScene()
+    {
+        SceneManager.LoadScene(SceneList.BulletCount);
+    }
+
+    void ShowDialogue(string message)
+    {
+        dialogueText.text = message;
+        dialogueText.gameObject.SetActive(true);
+    }
     void FireGunEffect()
     {
         Debug.Log("총 발사 빵! 🔫");
         audioSource.PlayOneShot(gunshotSFX); 
         // 이펙트나 사운드 추가하면 됨
-    }
-
-    public void ActivateTargets()
-    {
-        foreach (GameObject target in targets)
-        {
-            target.SetActive(true);
-        }
-        canShoot = true;
-    }
-    void LoadNextScene()
-    {
-      SceneManager.LoadScene(SceneList.BulletCount);
-    }
-    void ShowDialogue(string message)
-    {
-        dialogueText.text = message;
-        dialogueText.gameObject.SetActive(true);
     }
 }

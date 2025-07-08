@@ -23,6 +23,8 @@ public class BulletCountDisplay : MonoBehaviour
 
     void GoToNextScene()
     {
-        SceneManager.LoadScene(SceneList.BadEnd1);
+        string nextScene = PlayerPrefs.GetString("NextSceneAfterBulletCount", "FallbackScene");
+        Debug.Log("다음 씬으로 이동: " + nextScene);
+        SceneManager.LoadScene(nextScene);
     }
 }

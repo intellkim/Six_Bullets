@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Chapter1/BadEnd_1.unity
     guid: 45bcda7d282ed2d4798cfdea25a62418
+  - enabled: 1
+    path: Assets/Scenes/Chapter3/Chapter3_Run_A.unity
+    guid: 6be345215a11cbc449877498ec84b16d
+  - enabled: 1
+    path: Assets/Scenes/Chapter3/Chapter3_Run_B.unity
+    guid: 65cedef5216810649a21cdbc22ac3398
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
