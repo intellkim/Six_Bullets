@@ -13,6 +13,7 @@ public class PoliceShooter : MonoBehaviour
 
     [Header("Shooting")]
     public float shootInterval = 2f;
+    public float shootDelay = 0.5f; // 🔥 추가: 총알 쏘기 전 대기시간
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 8f;
@@ -21,27 +22,32 @@ public class PoliceShooter : MonoBehaviour
     public Transform leftPoint;
     public Transform rightPoint;
 
+    [Header("Laser Line")] // 🔥 추가
+    public LineRenderer laserLine;
+
     private Transform player;
     private Transform currentTarget;
     private float shootTimer = 0f;
     private bool isChasing = false;
+    private bool isPreparingToShoot = false; // 🔥 추가
+    private Vector2 shootDirection; // 🔥 조준 방향 저장용
+
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         currentTarget = rightPoint;
+        laserLine.enabled = false; // 🔥 추가
     }
 
     void Update()
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // 추격 시작
         if (distanceToPlayer < detectionRange)
         {
             isChasing = true;
         }
-        // 추격 중인데 너무 멀어지면 포기하고 순찰로 복귀
         else if (distanceToPlayer > forgetRange)
         {
             isChasing = false;
@@ -77,23 +83,42 @@ public class PoliceShooter : MonoBehaviour
         Vector2 direction = (player.position - transform.position).normalized;
         transform.Translate(direction * chaseSpeed * Time.deltaTime);
 
-        // 총 쏘기
+        // 총 쏘기 (예고 → 발사)
         shootTimer += Time.deltaTime;
-        if (shootTimer >= shootInterval)
+        if (shootTimer >= shootInterval && !isPreparingToShoot)
         {
             shootTimer = 0f;
-            Shoot();
+            isPreparingToShoot = true;
+            ShootWithWarning(); // 🔥 추가: 레이저 후 발사
         }
+    }
+
+    void ShootWithWarning() // 🔥 추가
+    {
+        shootDirection = (player.position - firePoint.position).normalized; // ✅ 조준 순간의 방향 저장
+        Vector2 endPoint = (Vector2)firePoint.position + shootDirection * 10f;
+
+        laserLine.SetPosition(0, firePoint.position);
+        laserLine.SetPosition(1, endPoint);
+        laserLine.enabled = true;
+
+        Invoke("Shoot", shootDelay);
+        Invoke("DisableLaser", shootDelay);
+    }
+
+    void DisableLaser() // 🔥 추가
+    {
+        laserLine.enabled = false;
+        isPreparingToShoot = false;
     }
 
     void Shoot()
     {
-        Vector2 direction = (player.position - firePoint.position).normalized;
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            rb.linearVelocity = direction * bulletSpeed;
+            rb.linearVelocity = shootDirection * bulletSpeed; // ✅ 저장한 방향 그대로 사용
         }
         Debug.Log("총 발사!");
     }
