@@ -1079,6 +1079,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitEffect: {fileID: 186484182}
+  dialogueText: "\uD655\uC2E4\uD55C \uB140\uC11D\uC774\uAD70..."
+  nextSceneName: Chapter2_Jumpmap
+  reduceBullet: 1
 --- !u!61 &1187469080
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1228,6 +1231,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitEffect: {fileID: 618151107}
+  dialogueText: "\uC2E4\uB9DD\uC774\uAD70..."
+  nextSceneName: BadEnd_1
+  reduceBullet: 1
 --- !u!61 &1302939487
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -21,6 +21,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Chapter1/BadEnd_1.unity
     guid: 45bcda7d282ed2d4798cfdea25a62418
   - enabled: 1
+    path: Assets/Scenes/Chapter2/Chapter2_Jumpmap.unity
+    guid: 6d9410184b838244898e92342a890119
+  - enabled: 1
+    path: Assets/Scenes/Chapter2/Chapter2_Briefing_Betrayal.unity
+    guid: 1e21f8e7423149a4e80112129f032631
+  - enabled: 1
     path: Assets/Scenes/Chapter3/Chapter3_Run_A.unity
     guid: 6be345215a11cbc449877498ec84b16d
   - enabled: 1

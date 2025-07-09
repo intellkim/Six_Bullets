@@ -913,7 +913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hitEffect: {fileID: 1697318007}
   dialogueText: "\uD06C\uC544\uC544\uC544\uC544\uC544\uC544\uC545"
-  nextSceneName: 
+  nextSceneName: Chapter2_Escape_B
   reduceBullet: 1
 --- !u!1 &1596490442
 GameObject:
