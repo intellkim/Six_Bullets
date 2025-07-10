@@ -3,32 +3,50 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f;   // 이동 속도
-    public float jumpForce = 7f;   // 점프 힘
-    private Rigidbody2D rb;
-    private bool isGrounded;
-    private Animator anim;
-    // 벽점프 관련 변수
-    public float wallJumpForceX = 6f;
-    public float wallJumpForceY = 10f;
-
-    private bool isTouchingWall = false;
+    // -------------------- 🔵 이동 및 점프 --------------------
+    public float moveSpeed = 5f;           // 기본 이동 속도
+    public float jumpForce = 7f;           // 점프 힘
+    private bool isGrounded;               // 땅에 있는지 여부
+    private bool isTouchingWall = false;   // 벽에 닿았는지 여부
     private bool isWallJumping = false;
     private float wallJumpTime = 0.2f;
     private float wallJumpCounter;
-    private bool isKnockedBack = false;  // 넉백 중일 때 조작 잠금
-    public float attackRange = 1.5f; // 공격 범위
-    public LayerMask betrayerLayer; // 배신자만 탐지할 Layer
+    public float wallJumpForceX = 6f;
+    public float wallJumpForceY = 10f;
+
+    // -------------------- 🟠 전투 및 공격 --------------------
+    public float attackRange = 1.5f;         // 주먹 공격 범위
+    public LayerMask betrayerLayer;         // 배신자 레이어 탐지
     private float attackCooldown = 0.5f;
     private float lastAttackTime = -10f;
+
+    // -------------------- 🔴 피격 및 넉백 --------------------
+    private bool isKnockedBack = false;
     public int hitByBetrayerCount = 0;
     public int maxHitsToTriggerGun = 3;
     public GunShootManager gunShootManager; // 인스펙터에서 연결
 
+    // -------------------- 🟢 슬라이드 --------------------
+    public float slideSpeed = 10f;       // 슬라이드 속도
+    private bool isSliding = false;
+    // ▶ 슬라이드용 콜라이더 사이즈 설정
+    private BoxCollider2D boxCollider;
+    private Vector2 originalColliderSize;
+    private Vector2 originalColliderOffset;
+    public Vector2 slideColliderSize = new Vector2(1.5f, 0.5f);   // 원하는 사이즈로 조정
+    public Vector2 slideColliderOffset = new Vector2(0f, -0.25f); // 콜라이더 중심 조절
+    // -------------------- ⚙️ 컴포넌트 --------------------
+    private Rigidbody2D rb;
+    private Animator anim;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+
+        boxCollider = GetComponent<BoxCollider2D>();
+        originalColliderSize = boxCollider.size;
+        originalColliderOffset = boxCollider.offset;
     }
 
     void Update()
@@ -36,6 +54,21 @@ public class PlayerController : MonoBehaviour
         Move();
         Jump();
 
+        // ▶ Shift 누르고 있는 동안만 슬라이드 상태 유지
+        if (!isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift))
+        {
+            StartSlide();
+        }
+        else if (isSliding && !Input.GetKey(KeyCode.LeftShift))
+        {
+            EndSlide();
+        }
+        if (isSliding)
+        {
+            float direction = Mathf.Sign(transform.localScale.x);
+            rb.linearVelocity = new Vector2(direction * slideSpeed, rb.linearVelocity.y);
+        }
+        
         anim.SetBool("isJumping", !isGrounded);
         if (isWallJumping)
         {
@@ -56,7 +89,7 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (isKnockedBack) return; // 넉백 중이면 이동 차단
+        if (isKnockedBack || isSliding) return; // 넉백 중이면 이동 차단
 
         float moveInput = Input.GetAxisRaw("Horizontal"); // A, D 키 또는 ←, → 방향키
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
@@ -73,7 +106,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (isKnockedBack) return; // 넉백 중이면 이동 차단
+        if (isKnockedBack || isSliding) return; // 넉백 중이면 이동 차단
 
         if (Input.GetButtonDown("Jump"))
         {
@@ -187,5 +220,27 @@ public class PlayerController : MonoBehaviour
         }
 
         // 👉 Punch 애니메이션도 여기서 트리거 가능
+    }
+    void StartSlide()
+    {
+        isSliding = true;
+
+        boxCollider.size = slideColliderSize;
+        boxCollider.offset = slideColliderOffset;
+
+        float direction = Mathf.Sign(transform.localScale.x);
+        float slideAngle = (direction > 0) ? 90f : -90f;
+        transform.rotation = Quaternion.Euler(0f, 0f, slideAngle);
+    }
+
+    void EndSlide()
+    {
+        isSliding = false;
+
+        // ✅ 콜라이더 복구
+        boxCollider.size = originalColliderSize;
+        boxCollider.offset = originalColliderOffset;
+        // ▶ 원래 회전 상태로 복구
+        transform.rotation = Quaternion.identity;
     }
 }
