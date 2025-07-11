@@ -4,15 +4,16 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     // -------------------- 🔵 이동 및 점프 --------------------
-    public float moveSpeed = 5f;           // 기본 이동 속도
-    public float jumpForce = 7f;           // 점프 힘
+    [SerializeField] private float moveSpeed = 4f;           // 기본 이동 속도
+    [SerializeField] private float jumpForce = 7f;           // 점프 힘
+    [SerializeField] private float maxMovement = 6f;
     private bool isGrounded;               // 땅에 있는지 여부
     private bool isTouchingWall = false;   // 벽에 닿았는지 여부
     private bool isWallJumping = false;
-    private float wallJumpTime = 0.2f;
+    [SerializeField] private float wallJumpTime = 0.4f;
     private float wallJumpCounter;
-    public float wallJumpForceX = 6f;
-    public float wallJumpForceY = 10f;
+    [SerializeField] private float wallJumpForceX = 6f;
+    [SerializeField] private float wallJumpForceY = 10f;
 
     // -------------------- 🟠 전투 및 공격 --------------------
     public float attackRange = 1.5f;         // 주먹 공격 범위
@@ -51,6 +52,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        isGrounded = rb.linearVelocity.y == 0f;
+
         Move();
         Jump();
 
@@ -92,7 +95,26 @@ public class PlayerController : MonoBehaviour
         if (isKnockedBack || isSliding) return; // 넉백 중이면 이동 차단
 
         float moveInput = Input.GetAxisRaw("Horizontal"); // A, D 키 또는 ←, → 방향키
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
+
+        if (!isWallJumping)
+        {
+            float xMovement = moveSpeed * moveInput;
+            if (!isGrounded)
+            {
+                xMovement += rb.linearVelocity.x;
+                rb.linearDamping = 0.4f;
+            }
+            else
+            {
+                rb.linearDamping = 0f;
+            }
+
+            if (xMovement > maxMovement) xMovement = maxMovement;
+            else if (xMovement < maxMovement * -1f) xMovement = maxMovement * -1f;
+
+            rb.linearVelocity = new Vector2(xMovement, rb.linearVelocity.y);
+        }
+        
 
         // ✅ 애니메이션 파라미터 전달
         anim.SetFloat("Speed", Mathf.Abs(moveInput));
@@ -100,7 +122,7 @@ public class PlayerController : MonoBehaviour
         // ✅ 방향 전환 (좌우 반전)
         if (moveInput != 0)
         {
-            transform.localScale = new Vector3(Mathf.Sign(moveInput), 1, 1);
+            transform.localScale = new Vector3(Mathf.Sign(rb.linearVelocity.x), 1, 1);
         }
     }
 
@@ -119,7 +141,7 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = true;
                 wallJumpCounter = wallJumpTime;
 
-                // 벽 반대 방향으로 튕겨 나가기
+                // 벽 반대 방향으로 튕겨 나D 가기
                 float direction = -Mathf.Sign(transform.localScale.x);
                 rb.linearVelocity = new Vector2(wallJumpForceX * direction, wallJumpForceY);
 
@@ -135,7 +157,7 @@ public class PlayerController : MonoBehaviour
         // 땅에 닿으면 isGrounded true
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = true;
+            isTouchingWall = true;
         }
         if (collision.gameObject.CompareTag("Wall"))
             isTouchingWall = true;
@@ -146,7 +168,7 @@ public class PlayerController : MonoBehaviour
         // 땅에서 떨어지면 isGrounded false
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isGrounded = false;
+            isTouchingWall = false;
         }
         if (collision.gameObject.CompareTag("Wall"))
             isTouchingWall = false;
