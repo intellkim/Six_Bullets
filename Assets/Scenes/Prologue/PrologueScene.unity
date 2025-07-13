@@ -447,6 +447,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   jumpForce: 7
+  wallJumpForceX: 6
+  wallJumpForceY: 10
+  attackRange: 1.5
+  betrayerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  hitByBetrayerCount: 0
+  maxHitsToTriggerGun: 3
+  gunShootManager: {fileID: 0}
+  slideSpeed: 10
+  slideColliderSize: {x: 1.5, y: 0.5}
+  slideColliderOffset: {x: 0, y: -0.25}
 --- !u!61 &499341509
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -485,7 +497,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.1, y: 2.5}
+    oldSize: {x: 1.4, y: 2.6}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
