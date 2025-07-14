@@ -185,13 +185,14 @@ MonoBehaviour:
   attackRange: 1.5
   betrayerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   hitByBetrayerCount: 0
   maxHitsToTriggerGun: 3
   gunShootManager: {fileID: 0}
   slideSpeed: 7
   slideColliderSize: {x: 0.5, y: 0.5}
   slideColliderOffset: {x: 0, y: -0.25}
+  isHiding: 0
 --- !u!95 &1236619851017534196
 Animator:
   serializedVersion: 7

@@ -36,6 +36,12 @@ public class PlayerController : MonoBehaviour
     private Vector2 originalColliderOffset;
     public Vector2 slideColliderSize = new Vector2(1.5f, 0.5f);   // 원하는 사이즈로 조정
     public Vector2 slideColliderOffset = new Vector2(0f, -0.25f); // 콜라이더 중심 조절
+
+    // -------------------- 🟢 숨기 --------------------
+    private bool isInHideSpot = false;
+    public bool isHiding = false;
+    private SpriteRenderer sr;
+
     // -------------------- ⚙️ 컴포넌트 --------------------
     private Rigidbody2D rb;
     private Animator anim;
@@ -43,6 +49,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
 
 
         boxCollider = GetComponent<BoxCollider2D>();
@@ -71,7 +78,7 @@ public class PlayerController : MonoBehaviour
             float direction = Mathf.Sign(transform.localScale.x);
             rb.linearVelocity = new Vector2(direction * slideSpeed, rb.linearVelocity.y);
         }
-        
+
         anim.SetBool("isJumping", !isGrounded);
         if (isWallJumping)
         {
@@ -88,6 +95,21 @@ public class PlayerController : MonoBehaviour
             TryPunch();
             lastAttackTime = Time.time;
         }
+        if (isInHideSpot && Input.GetKeyDown(KeyCode.Z))
+        {
+            isHiding = !isHiding;
+            Debug.Log(isHiding ? "😶 은신 시작" : "😶 은신 해제");
+
+            if (isHiding)
+            {
+                sr.color = new Color(1f, 1f, 1f, 0.3f); // 30% 투명
+            }
+            else
+            {
+                sr.color = Color.white; // 불투명 복원
+            }
+        }
+
     }
 
     void Move()
@@ -114,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
             rb.linearVelocity = new Vector2(xMovement, rb.linearVelocity.y);
         }
-        
+
 
         // ✅ 애니메이션 파라미터 전달
         anim.SetFloat("Speed", Mathf.Abs(moveInput));
@@ -141,13 +163,29 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = true;
                 wallJumpCounter = wallJumpTime;
 
-                // 벽 반대 방향으로 튕겨 나D 가기
+                // 벽 반대 방향으로 튕겨 나가기
                 float direction = -Mathf.Sign(transform.localScale.x);
                 rb.linearVelocity = new Vector2(wallJumpForceX * direction, wallJumpForceY);
 
                 // 방향 전환
                 transform.localScale = new Vector3(direction, 1f, 1f);
             }
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("HideSpot"))
+        {
+            isInHideSpot = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("HideSpot"))
+        {
+            isInHideSpot = false;
+            isHiding = false; // 밖으로 나오면 은신 해제
         }
     }
 
