@@ -42,6 +42,15 @@ public class PlayerController : MonoBehaviour
     public bool isHiding = false;
     private SpriteRenderer sr;
 
+    
+    // -------------------- ✅ 기능 ON/OFF 설정 (인스펙터에서 조절 가능) --------------------
+    [Header("🔘 기능 활성화 여부")]
+    public bool enableMovement = true;
+    public bool enableJump = true;
+    public bool enableCombat = true;
+    public bool enableSlide = true;
+    public bool enableHide = true;
+
     // -------------------- ⚙️ 컴포넌트 --------------------
     private Rigidbody2D rb;
     private Animator anim;
@@ -61,11 +70,11 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = rb.linearVelocity.y == 0f;
 
-        Move();
-        Jump();
+                if (enableMovement) Move(); // 🔵 이동 기능 토글
+                if (enableJump) Jump(); // 🔵 점프 기능 토글
 
         // ▶ Shift 누르고 있는 동안만 슬라이드 상태 유지
-        if (!isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift))
+        if (enableSlide && !isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift)) // 🟢 슬라이드 기능 토글
         {
             StartSlide();
         }
@@ -73,7 +82,7 @@ public class PlayerController : MonoBehaviour
         {
             EndSlide();
         }
-        if (isSliding)
+        if (enableSlide && isSliding) // 🟢 슬라이드 유지 조건
         {
             float direction = Mathf.Sign(transform.localScale.x);
             rb.linearVelocity = new Vector2(direction * slideSpeed, rb.linearVelocity.y);
@@ -88,14 +97,14 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = false;
             }
         }
-        if (Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown)
+        if (enableCombat && Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown) // 🟠 전투 기능 토글
         {
 
             Debug.Log("👊👊 배신자에게 주먹 공격 시도");
             TryPunch();
             lastAttackTime = Time.time;
         }
-        if (isInHideSpot && Input.GetKeyDown(KeyCode.Z))
+        if (enableHide && isInHideSpot && Input.GetKeyDown(KeyCode.Z)) // 🟣 은신 기능 토글
         {
             isHiding = !isHiding;
             Debug.Log(isHiding ? "😶 은신 시작" : "😶 은신 해제");
