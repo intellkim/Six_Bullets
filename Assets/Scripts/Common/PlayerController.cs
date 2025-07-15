@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     public bool isHiding = false;
     private SpriteRenderer sr;
 
-    
+
     // -------------------- ✅ 기능 ON/OFF 설정 (인스펙터에서 조절 가능) --------------------
     [Header("🔘 기능 활성화 여부")]
     public bool enableMovement = true;
@@ -70,8 +70,8 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = rb.linearVelocity.y == 0f;
 
-                if (enableMovement) Move(); // 🔵 이동 기능 토글
-                if (enableJump) Jump(); // 🔵 점프 기능 토글
+        if (enableMovement) Move(); // 🔵 이동 기능 토글
+        if (enableJump) Jump(); // 🔵 점프 기능 토글
 
         // ▶ Shift 누르고 있는 동안만 슬라이드 상태 유지
         if (enableSlide && !isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift)) // 🟢 슬라이드 기능 토글
@@ -223,10 +223,13 @@ public class PlayerController : MonoBehaviour
     public void ForceGrounded()
     {
         isGrounded = true;
-        rb.gravityScale = 1f;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // 수직 속도 정지
+        isWallJumping = false;
+
+        rb.linearVelocity = Vector2.zero;
         anim.SetBool("isJumping", false);
-        anim.SetFloat("Speed", 0f);  // ✅ 강제로 정지 상태
+        anim.SetFloat("Speed", 0f);
+
+        anim.Play("Idle 0"); // 👉 실제 Idle 상태 이름이 다르면 정확한 이름으로 수정
 
     }
     public void ApplyKnockback(Vector2 attackerPos, float distance = 4f, float duration = 0.1f)
