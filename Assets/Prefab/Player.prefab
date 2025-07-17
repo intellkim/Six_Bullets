@@ -189,7 +189,8 @@ MonoBehaviour:
   hitByBetrayerCount: 0
   maxHitsToTriggerGun: 3
   gunShootManager: {fileID: 0}
-  slideSpeed: 7
+  slideSpeed: 8
+  slideTimeMax: 0
   slideColliderSize: {x: 0.5, y: 0.5}
   slideColliderOffset: {x: 0, y: -0.25}
   isHiding: 0

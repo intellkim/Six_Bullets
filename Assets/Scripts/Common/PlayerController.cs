@@ -1,15 +1,18 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.Rendering.Universal.Internal;
 
 public class PlayerController : MonoBehaviour
 {
     // -------------------- 🔵 이동 및 점프 --------------------
     [SerializeField] private float moveSpeed = 4f;           // 기본 이동 속도
     [SerializeField] private float jumpForce = 7f;           // 점프 힘
+    private const float AIR_RESISTANCE = 0.4f;
     [SerializeField] private float maxMovement = 6f;
     private bool isGrounded;               // 땅에 있는지 여부
     private bool isTouchingWall = false;   // 벽에 닿았는지 여부
+    private int currentWallTouching = 0;
     private bool isWallJumping = false;
     [SerializeField] private float wallJumpTime = 0.4f;
     private float wallJumpCounter;
@@ -29,7 +32,9 @@ public class PlayerController : MonoBehaviour
     public GunShootManager gunShootManager; // 인스펙터에서 연결
 
     // -------------------- 🟢 슬라이드 --------------------
-    public float slideSpeed = 10f;       // 슬라이드 속도
+    [SerializeField] private float slideSpeed = 10f;       // 슬라이드 속도
+    [SerializeField] private float slideTimeMax;
+    private float slideTimer;
     private bool isSliding = false;
     // ▶ 슬라이드용 콜라이더 사이즈 설정
     private BoxCollider2D boxCollider;
@@ -69,7 +74,10 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        Debug.DrawRay(transform.position, Vector3.up, Color.green);
+
         isGrounded = Mathf.Abs(rb.linearVelocity.y) <= 0.01f;
+        isTouchingWall = currentWallTouching > 0;
 
         if (enableMovement) Move(); // 🔵 이동 기능 토글
         if (enableJump) Jump(); // 🔵 점프 기능 토글
@@ -83,6 +91,15 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = false;
             }
         }
+        if (isSliding)
+        {
+            slideTimer -= Time.deltaTime;
+            if (slideTimer <= 0f)
+            {
+                EndSlide();
+            }
+        }
+        
         if (enableCombat && Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown) // 🟠 전투 기능 토글
         {
 
@@ -118,16 +135,13 @@ public class PlayerController : MonoBehaviour
         if (!isWallJumping)
         {
             float xMovement = moveSpeed * moveInput;
-            if (startSlideInput && Mathf.Abs(moveInput) > 0f)
-            {
-                StartSlide();
-            }
+            if (startSlideInput && Mathf.Abs(moveInput) > 0f) StartSlide();
             else if (stopSlideInput) EndSlide();
 
             if (!isGrounded)
             {
                 xMovement += rb.linearVelocity.x;
-                rb.linearDamping = 0.4f;
+                rb.linearDamping = AIR_RESISTANCE;
             }
             else
             {
@@ -204,22 +218,18 @@ public class PlayerController : MonoBehaviour
         // 땅에 닿으면 isGrounded true
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isTouchingWall = true;
+            currentWallTouching += 1;
         }
-        if (collision.gameObject.CompareTag("Wall"))
-            isTouchingWall = true;
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        Debug.Log($"Exiting with: {collision.gameObject.name}");
+        // Debug.Log($"Exiting with: {collision.gameObject.name}");
         // 땅에서 떨어지면 isGrounded false
         if (collision.gameObject.CompareTag("Ground"))
         {
-            isTouchingWall = false;
+            currentWallTouching -= 1;
         }
-        if (collision.gameObject.CompareTag("Wall"))
-            isTouchingWall = false;
     }
     public void ForceGrounded()
     {
@@ -297,6 +307,7 @@ public class PlayerController : MonoBehaviour
     void StartSlide()
     {
         isSliding = true;
+        slideTimer = slideTimeMax;
 
         boxCollider.size = slideColliderSize;
         boxCollider.offset = slideColliderOffset;
@@ -308,6 +319,15 @@ public class PlayerController : MonoBehaviour
 
     void EndSlide()
     {
+        LayerMask mask = LayerMask.GetMask("Ground");
+        float raycastDistance = 1f;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up, raycastDistance, mask);
+        if (hit)
+        {
+            Debug.Log("Raycast hit!");
+            return;
+        }
+        
         isSliding = false;
         rb.linearVelocity = Vector2.zero;
 
