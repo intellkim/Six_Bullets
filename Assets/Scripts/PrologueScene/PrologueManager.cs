@@ -1,16 +1,26 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering.Universal;
 
 public class PrologueManager : MonoBehaviour
 {
     public TextMeshProUGUI dialogueText;
-    public GameObject blackOverlay;
+    [Header("조명 연출")]
+    public Light2D globalLight;  // Light 2D (Global Light)
+    public float darkIntensity = 0.2f; // 어두워질 때 값
+    public float lightIntensity = 1f;  // 기본 밝기
+    void Awake()
+    {
+        PlayerPrefs.SetInt("BulletsLeft", 6);
+        PlayerPrefs.Save(); // (선택) 즉시 저장
+    }
 
     void Start()
     {
         dialogueText.text = "";
-        blackOverlay.SetActive(false);
+        if (globalLight != null)
+            globalLight.intensity = lightIntensity;
     }
 
     public void StartBagCutscene()
@@ -20,7 +30,8 @@ public class PrologueManager : MonoBehaviour
 
     System.Collections.IEnumerator PlayCutscene()
     {
-        blackOverlay.SetActive(true);
+        if (globalLight != null)
+            globalLight.intensity = darkIntensity;
         yield return new WaitForSecondsRealtime(0.5f);
 
         yield return ShowLine("...가방 안에... 총?");

@@ -93,6 +93,10 @@ public class PoliceAI : MonoBehaviour
 
     bool CanSeePlayer()
     {
+        PlayerController pc = player.GetComponent<PlayerController>();
+        if (pc != null && pc.isHiding)
+            return false;
+
         if (player == null) return false;
 
         Vector2 dirToPlayer = player.position - transform.position;
@@ -114,6 +118,12 @@ public class PoliceAI : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            PlayerController pc = other.GetComponent<PlayerController>();
+            if (pc != null && pc.isHiding)
+            {
+                Debug.Log("🫥 은신 중이라 체포 무시");
+                return;
+            }
             Debug.Log("🚨 플레이어 체포!");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // 현재 씬 리셋
         }

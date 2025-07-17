@@ -9,6 +9,7 @@ TagManager:
   - TargetB
   - Wall
   - Target_Betrayer
+  - HideSpot
   layers:
   - Default
   - TransparentFX

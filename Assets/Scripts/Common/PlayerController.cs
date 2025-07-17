@@ -36,6 +36,21 @@ public class PlayerController : MonoBehaviour
     private Vector2 originalColliderOffset;
     public Vector2 slideColliderSize = new Vector2(1.5f, 0.5f);   // 원하는 사이즈로 조정
     public Vector2 slideColliderOffset = new Vector2(0f, -0.25f); // 콜라이더 중심 조절
+
+    // -------------------- 🟢 숨기 --------------------
+    private bool isInHideSpot = false;
+    public bool isHiding = false;
+    private SpriteRenderer sr;
+
+
+    // -------------------- ✅ 기능 ON/OFF 설정 (인스펙터에서 조절 가능) --------------------
+    [Header("🔘 기능 활성화 여부")]
+    public bool enableMovement = true;
+    public bool enableJump = true;
+    public bool enableCombat = true;
+    public bool enableSlide = true;
+    public bool enableHide = true;
+
     // -------------------- ⚙️ 컴포넌트 --------------------
     private Rigidbody2D rb;
     private Animator anim;
@@ -43,6 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
 
 
         boxCollider = GetComponent<BoxCollider2D>();
@@ -54,11 +70,11 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = rb.linearVelocity.y == 0f;
 
-        Move();
-        Jump();
+        if (enableMovement) Move(); // 🔵 이동 기능 토글
+        if (enableJump) Jump(); // 🔵 점프 기능 토글
 
         // ▶ Shift 누르고 있는 동안만 슬라이드 상태 유지
-        if (!isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift))
+        if (enableSlide && !isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift)) // 🟢 슬라이드 기능 토글
         {
             StartSlide();
         }
@@ -66,12 +82,12 @@ public class PlayerController : MonoBehaviour
         {
             EndSlide();
         }
-        if (isSliding)
+        if (enableSlide && isSliding) // 🟢 슬라이드 유지 조건
         {
             float direction = Mathf.Sign(transform.localScale.x);
             rb.linearVelocity = new Vector2(direction * slideSpeed, rb.linearVelocity.y);
         }
-        
+
         anim.SetBool("isJumping", !isGrounded);
         if (isWallJumping)
         {
@@ -81,13 +97,28 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = false;
             }
         }
-        if (Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown)
+        if (enableCombat && Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown) // 🟠 전투 기능 토글
         {
 
             Debug.Log("👊👊 배신자에게 주먹 공격 시도");
             TryPunch();
             lastAttackTime = Time.time;
         }
+        if (enableHide && isInHideSpot && Input.GetKeyDown(KeyCode.Z)) // 🟣 은신 기능 토글
+        {
+            isHiding = !isHiding;
+            Debug.Log(isHiding ? "😶 은신 시작" : "😶 은신 해제");
+
+            if (isHiding)
+            {
+                sr.color = new Color(1f, 1f, 1f, 0.3f); // 30% 투명
+            }
+            else
+            {
+                sr.color = Color.white; // 불투명 복원
+            }
+        }
+
     }
 
     void Move()
@@ -114,7 +145,7 @@ public class PlayerController : MonoBehaviour
 
             rb.linearVelocity = new Vector2(xMovement, rb.linearVelocity.y);
         }
-        
+
 
         // ✅ 애니메이션 파라미터 전달
         anim.SetFloat("Speed", Mathf.Abs(moveInput));
@@ -141,13 +172,29 @@ public class PlayerController : MonoBehaviour
                 isWallJumping = true;
                 wallJumpCounter = wallJumpTime;
 
-                // 벽 반대 방향으로 튕겨 나D 가기
+                // 벽 반대 방향으로 튕겨 나가기
                 float direction = -Mathf.Sign(transform.localScale.x);
                 rb.linearVelocity = new Vector2(wallJumpForceX * direction, wallJumpForceY);
 
                 // 방향 전환
                 transform.localScale = new Vector3(direction, 1f, 1f);
             }
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("HideSpot"))
+        {
+            isInHideSpot = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("HideSpot"))
+        {
+            isInHideSpot = false;
+            isHiding = false; // 밖으로 나오면 은신 해제
         }
     }
 
@@ -176,10 +223,13 @@ public class PlayerController : MonoBehaviour
     public void ForceGrounded()
     {
         isGrounded = true;
-        rb.gravityScale = 1f;
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); // 수직 속도 정지
+        isWallJumping = false;
+
+        rb.linearVelocity = Vector2.zero;
         anim.SetBool("isJumping", false);
-        anim.SetFloat("Speed", 0f);  // ✅ 강제로 정지 상태
+        anim.SetFloat("Speed", 0f);
+
+        anim.Play("Idle 0"); // 👉 실제 Idle 상태 이름이 다르면 정확한 이름으로 수정
 
     }
     public void ApplyKnockback(Vector2 attackerPos, float distance = 4f, float duration = 0.1f)

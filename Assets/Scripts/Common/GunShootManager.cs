@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering.Universal;
 
 public class GunShootManager : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class GunShootManager : MonoBehaviour
     public GameObject crosshairUI;
     public Animator playerAnim;
     public PlayerController playerController;
+    [Header("조명 연출")]
+    public Light2D globalLight; // Global Light 연결
+    public float darkIntensity = 0.2f;
+    public float lightIntensity = 1f;
 
     private bool canShoot = false;
 
@@ -39,11 +44,20 @@ public class GunShootManager : MonoBehaviour
 
         playerAnim.SetBool("isAiming", true);
         heartbeatAudio.Play();
-        cinematicOverlay.SetActive(true);
-        Time.timeScale = 0.1f;
+
+        if (globalLight != null)
+            globalLight.intensity = darkIntensity;
+
+        Time.timeScale = 0.01f;
 
         foreach (GameObject target in targets)
+        {
             target.SetActive(true);
+
+            Target targetScript = target.GetComponent<Target>();
+            if (targetScript != null)
+                targetScript.EnableSpotlight(true); // 스포트라이트 켜기
+        }
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         Cursor.visible = false;
@@ -58,11 +72,18 @@ public class GunShootManager : MonoBehaviour
 
         if (hit.collider != null)
         {
+            foreach (GameObject target in targets)
+            {
+                Target targetScript2 = target.GetComponent<Target>();
+                if (targetScript2 != null)
+                    targetScript2.EnableSpotlight(false); // 스포트라이트 끄기
+            }
             Debug.Log("맞춘 타겟: " + hit.collider.name);
 
             Time.timeScale = 1f;
             heartbeatAudio.Stop();
-            cinematicOverlay.SetActive(false);
+            if (globalLight != null)
+                globalLight.intensity = lightIntensity;
             crosshairUI.SetActive(false);
             Cursor.visible = true;
 
@@ -108,7 +129,7 @@ public class GunShootManager : MonoBehaviour
     void FireGunEffect()
     {
         Debug.Log("총 발사 빵! 🔫");
-        audioSource.PlayOneShot(gunshotSFX); 
+        audioSource.PlayOneShot(gunshotSFX);
         // 이펙트나 사운드 추가하면 됨
     }
 }

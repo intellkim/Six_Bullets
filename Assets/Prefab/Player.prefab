@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9088279608501072661}
   - component: {fileID: 630363239958996972}
   - component: {fileID: 1988080110994322799}
-  - component: {fileID: 1485878653123290299}
+  - component: {fileID: 7967531733254672807}
   - component: {fileID: 1236619851017534196}
   m_Layer: 0
   m_Name: Player
@@ -164,7 +164,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.3, y: 2.5}
   m_EdgeRadius: 0
---- !u!114 &1485878653123290299
+--- !u!114 &7967531733254672807
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -173,7 +173,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9139137154285508894}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6208c087d93363449866f5f1c66263d, type: 3}
+  m_Script: {fileID: 11500000, guid: d1f2ea8debc640544ab8acf768c4c0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
@@ -185,13 +185,19 @@ MonoBehaviour:
   attackRange: 1.5
   betrayerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   hitByBetrayerCount: 0
   maxHitsToTriggerGun: 3
   gunShootManager: {fileID: 0}
   slideSpeed: 7
   slideColliderSize: {x: 0.5, y: 0.5}
   slideColliderOffset: {x: 0, y: -0.25}
+  isHiding: 0
+  enableMovement: 1
+  enableJump: 1
+  enableCombat: 1
+  enableSlide: 1
+  enableHide: 1
 --- !u!95 &1236619851017534196
 Animator:
   serializedVersion: 7
