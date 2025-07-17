@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 117797380}
   - component: {fileID: 117797379}
   - component: {fileID: 117797381}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ Transform:
   m_LocalScale: {x: 3.7087, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 919982168}
+  m_Father: {fileID: 174399066}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &117797381
 BoxCollider2D:
@@ -263,7 +263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 174399066}
   m_Layer: 0
-  m_Name: Wall
+  m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -285,6 +285,9 @@ Transform:
   - {fileID: 1305597573}
   - {fileID: 2143097962}
   - {fileID: 1344231394}
+  - {fileID: 1191767158}
+  - {fileID: 117797380}
+  - {fileID: 1864804049}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &243683725
@@ -780,40 +783,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1695280295}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &919982167
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 919982168}
-  m_Layer: 0
-  m_Name: Grounds
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &919982168
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919982167}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.450455, y: 3.293214, z: -0.04946124}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1191767158}
-  - {fileID: 117797380}
-  - {fileID: 1864804049}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &957056931
 GameObject:
   m_ObjectHideFlags: 0
@@ -887,7 +856,7 @@ GameObject:
   - component: {fileID: 1191767158}
   - component: {fileID: 1191767157}
   - component: {fileID: 1191767156}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -1008,7 +977,7 @@ Transform:
   m_LocalScale: {x: 20.728724, y: 1.0265, z: 1.0265}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 919982168}
+  m_Father: {fileID: 174399066}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1305597570
 GameObject:
@@ -1021,9 +990,9 @@ GameObject:
   - component: {fileID: 1305597573}
   - component: {fileID: 1305597572}
   - component: {fileID: 1305597571}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall
-  m_TagString: Wall
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1155,7 +1124,7 @@ GameObject:
   - component: {fileID: 1344231394}
   - component: {fileID: 1344231396}
   - component: {fileID: 1344231395}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -1343,8 +1312,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
-      propertyPath: slideSpeed
-      value: 10
+      propertyPath: slideTimeMax
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
+      propertyPath: wallJumpForceX
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
+      propertyPath: wallJumpForceY
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 9139137154285508894, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
       propertyPath: m_Name
@@ -1730,7 +1707,7 @@ GameObject:
   - component: {fileID: 1864804049}
   - component: {fileID: 1864804048}
   - component: {fileID: 1864804050}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -1805,7 +1782,7 @@ Transform:
   m_LocalScale: {x: 3.7087, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 919982168}
+  m_Father: {fileID: 174399066}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1864804050
 BoxCollider2D:
@@ -1926,9 +1903,9 @@ GameObject:
   - component: {fileID: 2143097962}
   - component: {fileID: 2143097961}
   - component: {fileID: 2143097960}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall (1)
-  m_TagString: Wall
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2059,5 +2036,4 @@ SceneRoots:
   - {fileID: 1531493306}
   - {fileID: 1695280295}
   - {fileID: 174399066}
-  - {fileID: 919982168}
   - {fileID: 1465662345}
