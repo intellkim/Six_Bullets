@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -68,25 +69,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        isGrounded = rb.linearVelocity.y == 0f;
+        Debug.Log(isGrounded);
+        isGrounded = Mathf.Abs(rb.linearVelocity.y) <= 0.01f;
 
         if (enableMovement) Move(); // 🔵 이동 기능 토글
         if (enableJump) Jump(); // 🔵 점프 기능 토글
-
-        // ▶ Shift 누르고 있는 동안만 슬라이드 상태 유지
-        if (enableSlide && !isSliding && isGrounded && Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0 && Input.GetKey(KeyCode.LeftShift)) // 🟢 슬라이드 기능 토글
-        {
-            StartSlide();
-        }
-        else if (isSliding && !Input.GetKey(KeyCode.LeftShift))
-        {
-            EndSlide();
-        }
-        if (enableSlide && isSliding) // 🟢 슬라이드 유지 조건
-        {
-            float direction = Mathf.Sign(transform.localScale.x);
-            rb.linearVelocity = new Vector2(direction * slideSpeed, rb.linearVelocity.y);
-        }
 
         anim.SetBool("isJumping", !isGrounded);
         if (isWallJumping)
@@ -123,13 +110,21 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (isKnockedBack || isSliding) return; // 넉백 중이면 이동 차단
+        if (isKnockedBack) return; // 넉백 중이면 이동 차단
 
         float moveInput = Input.GetAxisRaw("Horizontal"); // A, D 키 또는 ←, → 방향키
+        bool startSlideInput = Input.GetKeyDown(KeyCode.LeftShift);
+        bool stopSlideInput = Input.GetKeyUp(KeyCode.LeftShift);
 
         if (!isWallJumping)
         {
             float xMovement = moveSpeed * moveInput;
+            if (startSlideInput && Mathf.Abs(moveInput) > 0f)
+            {
+                StartSlide();
+            }
+            else if (stopSlideInput) EndSlide();
+
             if (!isGrounded)
             {
                 xMovement += rb.linearVelocity.x;
@@ -142,6 +137,12 @@ public class PlayerController : MonoBehaviour
 
             if (xMovement > maxMovement) xMovement = maxMovement;
             else if (xMovement < maxMovement * -1f) xMovement = maxMovement * -1f;
+
+            if (isSliding && enableSlide)
+            {
+                float direction = Mathf.Sign(transform.localScale.x);
+                xMovement =  direction * slideSpeed;
+            }
 
             rb.linearVelocity = new Vector2(xMovement, rb.linearVelocity.y);
         }
@@ -308,6 +309,7 @@ public class PlayerController : MonoBehaviour
     void EndSlide()
     {
         isSliding = false;
+        rb.linearVelocity = Vector2.zero;
 
         // ✅ 콜라이더 복구
         boxCollider.size = originalColliderSize;

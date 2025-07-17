@@ -1343,20 +1343,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
-      propertyPath: moveSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
-      propertyPath: maxMovement
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
-      propertyPath: wallJumpTime
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7967531733254672807, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
-      propertyPath: wallJumpForceY
-      value: 6.5
+      propertyPath: slideSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9139137154285508894, guid: d615279f3439f9f438f8a0c0943d308d, type: 3}
       propertyPath: m_Name
