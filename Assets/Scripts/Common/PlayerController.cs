@@ -69,7 +69,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(isGrounded);
         isGrounded = Mathf.Abs(rb.linearVelocity.y) <= 0.01f;
 
         if (enableMovement) Move(); // 🔵 이동 기능 토글
@@ -201,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log($"Collision with: {collision.gameObject.name}");
+        // Debug.Log($"Collision with: {collision.gameObject.name}");
         // 땅에 닿으면 isGrounded true
         if (collision.gameObject.CompareTag("Ground"))
         {
@@ -213,6 +212,7 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
+        Debug.Log($"Exiting with: {collision.gameObject.name}");
         // 땅에서 떨어지면 isGrounded false
         if (collision.gameObject.CompareTag("Ground"))
         {
