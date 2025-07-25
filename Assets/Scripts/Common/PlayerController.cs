@@ -20,16 +20,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float wallJumpForceY = 10f;
 
     // -------------------- 🟠 전투 및 공격 --------------------
-    public float attackRange = 1.5f;         // 주먹 공격 범위
-    public LayerMask betrayerLayer;         // 배신자 레이어 탐지
+    [SerializeField] private float attackRange = 1.5f;         // 주먹 공격 범위
+    [SerializeField] private LayerMask betrayerLayer;         // 배신자 레이어 탐지
     private float attackCooldown = 0.5f;
     private float lastAttackTime = -10f;
 
     // -------------------- 🔴 피격 및 넉백 --------------------
     private bool isKnockedBack = false;
-    public int hitByBetrayerCount = 0;
-    public int maxHitsToTriggerGun = 3;
-    public GunShootManager gunShootManager; // 인스펙터에서 연결
+    [SerializeField] private int hitByBetrayerCount = 0;
+    [SerializeField] private int maxHitsToTriggerGun = 3;
+    [SerializeField] private GunShootManager gunShootManager; // 인스펙터에서 연결
 
     // -------------------- 🟢 슬라이드 --------------------
     [SerializeField] private float slideSpeed = 10f;       // 슬라이드 속도
@@ -40,27 +40,27 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D boxCollider;
     private Vector2 originalColliderSize;
     private Vector2 originalColliderOffset;
-    public Vector2 slideColliderSize = new Vector2(1.5f, 0.5f);   // 원하는 사이즈로 조정
-    public Vector2 slideColliderOffset = new Vector2(0f, -0.25f); // 콜라이더 중심 조절
+    [SerializeField] private Vector2 slideColliderSize = new Vector2(1.5f, 0.5f);   // 원하는 사이즈로 조정
+    [SerializeField] private Vector2 slideColliderOffset = new Vector2(0f, -0.25f); // 콜라이더 중심 조절
 
     // -------------------- 🟢 숨기 --------------------
     private bool isInHideSpot = false;
-    public bool isHiding = false;
+    [SerializeField] private bool isHiding = false;
     private SpriteRenderer sr;
 
 
     // -------------------- ✅ 기능 ON/OFF 설정 (인스펙터에서 조절 가능) --------------------
     [Header("🔘 기능 활성화 여부")]
-    public bool enableMovement = true;
-    public bool enableJump = true;
-    public bool enableCombat = true;
-    public bool enableSlide = true;
-    public bool enableHide = true;
+    [SerializeField] private bool enableMovement = true;
+    [SerializeField] private bool enableJump = true;
+    [SerializeField] private bool enableCombat = true;
+    [SerializeField] private bool enableSlide = true;
+    [SerializeField] private bool enableHide = true;
 
     // -------------------- ⚙️ 컴포넌트 --------------------
     private Rigidbody2D rb;
     private Animator anim;
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
         originalColliderOffset = boxCollider.offset;
     }
 
-    void Update()
+    private void Update()
     {
         Debug.DrawRay(transform.position, Vector3.up, Color.green);
 
@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    void Move()
+    private void Move()
     {
         if (isKnockedBack) return; // 넉백 중이면 이동 차단
 
@@ -171,7 +171,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Jump()
+    private void Jump()
     {
         if (isKnockedBack || isSliding) return; // 넉백 중이면 이동 차단
 
@@ -195,7 +195,8 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    void OnTriggerEnter2D(Collider2D other)
+    
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("HideSpot"))
         {
@@ -203,7 +204,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("HideSpot"))
         {
@@ -212,7 +213,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         // Debug.Log($"Collision with: {collision.gameObject.name}");
         // 땅에 닿으면 isGrounded true
@@ -222,7 +223,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
         // Debug.Log($"Exiting with: {collision.gameObject.name}");
         // 땅에서 떨어지면 isGrounded false
@@ -231,6 +232,7 @@ public class PlayerController : MonoBehaviour
             currentWallTouching -= 1;
         }
     }
+    
     public void ForceGrounded()
     {
         isGrounded = true;
@@ -243,6 +245,7 @@ public class PlayerController : MonoBehaviour
         anim.Play("Idle 0"); // 👉 실제 Idle 상태 이름이 다르면 정확한 이름으로 수정
 
     }
+
     public void ApplyKnockback(Vector2 attackerPos, float distance = 4f, float duration = 0.1f)
     {
         hitByBetrayerCount++;
@@ -285,7 +288,8 @@ public class PlayerController : MonoBehaviour
 
         isKnockedBack = false;
     }
-    void TryPunch()
+
+    private void TryPunch()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, betrayerLayer);
 
@@ -304,7 +308,8 @@ public class PlayerController : MonoBehaviour
 
         // 👉 Punch 애니메이션도 여기서 트리거 가능
     }
-    void StartSlide()
+
+    private void StartSlide()
     {
         isSliding = true;
         slideTimer = slideTimeMax;
@@ -317,7 +322,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, slideAngle);
     }
 
-    void EndSlide()
+    private void EndSlide()
     {
         LayerMask mask = LayerMask.GetMask("Ground");
         float raycastDistance = 1f;
