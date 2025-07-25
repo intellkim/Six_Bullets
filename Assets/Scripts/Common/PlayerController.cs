@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
 
     // -------------------- 🟢 숨기 --------------------
     private bool isInHideSpot = false;
-    [SerializeField] private bool isHiding = false;
+    public bool isHiding = false;
     private SpriteRenderer sr;
 
 
@@ -94,12 +94,13 @@ public class PlayerController : MonoBehaviour
         if (isSliding)
         {
             slideTimer -= Time.deltaTime;
+            Debug.Log($"⏱ 슬라이딩 중... 남은 시간: {slideTimer:F2}");
             if (slideTimer <= 0f)
             {
                 EndSlide();
             }
         }
-        
+
         if (enableCombat && Input.GetKeyDown(KeyCode.X) && Time.time - lastAttackTime > attackCooldown) // 🟠 전투 기능 토글
         {
 
@@ -135,7 +136,12 @@ public class PlayerController : MonoBehaviour
         if (!isWallJumping)
         {
             float xMovement = moveSpeed * moveInput;
-            if (startSlideInput && Mathf.Abs(moveInput) > 0f) StartSlide();
+            if (startSlideInput && Mathf.Abs(moveInput) > 0f)
+            {
+                Debug.Log("💨 슬라이드 입력 감지됨!");
+                Debug.Log($"Shift: {Input.GetKeyDown(KeyCode.LeftShift)}, MoveInput: {moveInput}");
+                StartSlide();
+            }
             else if (stopSlideInput) EndSlide();
 
             if (!isGrounded)
@@ -154,7 +160,7 @@ public class PlayerController : MonoBehaviour
             if (isSliding && enableSlide)
             {
                 float direction = Mathf.Sign(transform.localScale.x);
-                xMovement =  direction * slideSpeed;
+                xMovement = direction * slideSpeed;
             }
 
             rb.linearVelocity = new Vector2(xMovement, rb.linearVelocity.y);
@@ -195,7 +201,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-    
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("HideSpot"))
@@ -232,7 +238,7 @@ public class PlayerController : MonoBehaviour
             currentWallTouching -= 1;
         }
     }
-    
+
     public void ForceGrounded()
     {
         isGrounded = true;
@@ -320,6 +326,7 @@ public class PlayerController : MonoBehaviour
         float direction = Mathf.Sign(transform.localScale.x);
         float slideAngle = (direction > 0) ? 90f : -90f;
         transform.rotation = Quaternion.Euler(0f, 0f, slideAngle);
+        Debug.Log($"▶ 슬라이드 시작! angle={slideAngle}, duration={slideTimer}");
     }
 
     private void EndSlide()
@@ -332,7 +339,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Raycast hit!");
             return;
         }
-        
+
         isSliding = false;
         rb.linearVelocity = Vector2.zero;
 
