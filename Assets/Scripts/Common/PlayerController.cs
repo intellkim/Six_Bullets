@@ -70,6 +70,9 @@ public class PlayerController : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         originalColliderSize = boxCollider.size;
         originalColliderOffset = boxCollider.offset;
+
+
+        rb.mass = enableCombat ? 10f : 1f;
     }
 
     private void Update()
