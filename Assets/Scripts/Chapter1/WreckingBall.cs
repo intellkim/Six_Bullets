@@ -70,7 +70,7 @@ public class WreckingBall : MonoBehaviour
                 playerRb.AddForce(pushDir * pushForce * forceModifier, ForceMode2D.Impulse);
 
                 // 🛡️ velocity 제한 (너무 날아가지 않게)
-                playerRb.linearVelocity = Vector2.ClampMagnitude(playerRb.linearVelocity, 30f);
+                playerRb.linearVelocity = Vector2.ClampMagnitude(playerRb.linearVelocity, 15f);
 
                 Debug.Log($"💥 레킹볼 충돌: pushDir={pushDir}, verticalRatio={verticalRatio:F2}, velocity={playerRb.linearVelocity}");
             }
