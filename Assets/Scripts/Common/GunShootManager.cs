@@ -21,6 +21,8 @@ public class GunShootManager : MonoBehaviour
     public float lightIntensity = 1f;
 
     private bool canShoot = false;
+    [Header("허공 사격 분기용")]
+    [SerializeField] private string missedShotSceneName = "BadEnd_1";
 
     void Start()
     {
@@ -70,28 +72,34 @@ public class GunShootManager : MonoBehaviour
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
 
+
+        foreach (GameObject target in targets)
+        {
+            Target targetScript2 = target.GetComponent<Target>();
+            if (targetScript2 != null)
+                targetScript2.EnableSpotlight(false); // 스포트라이트 끄기
+        }
+
+        Time.timeScale = 1f;
+        heartbeatAudio.Stop();
+        if (globalLight != null)
+            globalLight.intensity = lightIntensity;
+        crosshairUI.SetActive(false);
+        Cursor.visible = true;
+
         if (hit.collider != null)
         {
-            foreach (GameObject target in targets)
-            {
-                Target targetScript2 = target.GetComponent<Target>();
-                if (targetScript2 != null)
-                    targetScript2.EnableSpotlight(false); // 스포트라이트 끄기
-            }
             Debug.Log("맞춘 타겟: " + hit.collider.name);
-
-            Time.timeScale = 1f;
-            heartbeatAudio.Stop();
-            if (globalLight != null)
-                globalLight.intensity = lightIntensity;
-            crosshairUI.SetActive(false);
-            Cursor.visible = true;
-
             Target targetScript = hit.collider.GetComponent<Target>();
             if (targetScript != null)
             {
                 HandleTargetHit(targetScript);
             }
+        }
+        else
+        {
+            HandleMissedShot();
+
         }
     }
 
@@ -115,7 +123,20 @@ public class GunShootManager : MonoBehaviour
 
         Invoke(nameof(LoadNextScene), 0.8f);
     }
+    void HandleMissedShot()
+    {
+        Debug.Log("허공에 사격! ❌");
+        FireGunEffect();
+        ShowDialogue("…총알은 허공을 갈랐다.");
 
+        int bulletsLeft = Mathf.Max(PlayerPrefs.GetInt("BulletsLeft", 6) - 1, 0);
+        PlayerPrefs.SetInt("BulletsLeft", bulletsLeft);
+
+        if (!string.IsNullOrEmpty(missedShotSceneName))
+            PlayerPrefs.SetString("NextSceneAfterBulletCount", missedShotSceneName);
+
+        Invoke(nameof(LoadNextScene), 0.8f);
+    }
     void LoadNextScene()
     {
         SceneManager.LoadScene(SceneList.BulletCount);
