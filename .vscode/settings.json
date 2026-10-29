@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Six_Bullets.sln"
+    "dotnet.defaultSolution": "Six_Bullets.slnx"
 }
